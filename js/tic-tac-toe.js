@@ -53,6 +53,8 @@ var TicTacToe = {
       }
     }
 
+    // Percentage for difficulty on ultimate move
+
   },
 
   runAITurn: function() {
@@ -126,7 +128,7 @@ var TicTacToe = {
         TicTacToe.completeXTurn($box, index);
 
         if ( TicTacToe.aiMode ) {
-          TicTacToe.runAITurn();
+          window.setTimeout(TicTacToe.runAITurn, 500);
         }
 
       } else {
