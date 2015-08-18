@@ -2,6 +2,8 @@ var TicTacToe = {
   isPlayer1Turn: true,
   turnsPassed: 0,
 
+  aiMode: true,
+
   xCombination: [],
   oCombination: [],
   winCombinations: [
@@ -17,10 +19,69 @@ var TicTacToe = {
     [3,6,9]
   ],
 
+  completeXTurn: function( position, element ) {
+    $(position).html("<p>X</p>");
+    TicTacToe.xCombination.push( element );
+    TicTacToe.checkWin( TicTacToe.xCombination );
+    TicTacToe.isPlayer1Turn = false;
+  },  
+
+  completeOTurn: function( position, element ) {
+    $(position).html("<p>O</p>");
+    TicTacToe.oCombination.push( element );
+    TicTacToe.checkWin( TicTacToe.oCombination );
+    TicTacToe.isPlayer1Turn = true;
+  },  
+
+  aiSetTile: function() {
+    var $box = $(".box");
+    $middle = $($box[4]);
+
+    if ( $middle.is(":empty") ) {
+      TicTacToe.completeOTurn($middle, 5);
+    } else {
+      while ( TicTacToe.isPlayer1Turn === false ) {
+        var i = Math.ceil(Math.random() * 9);
+        var $randomBox = $($box[ i - 1 ]);
+
+        if ( $randomBox.is(":empty") ) {
+          console.log("Tile Set on i: " + i);
+          TicTacToe.completeOTurn($randomBox, i);
+          TicTacToe.isPlayer1Turn = true;
+          console.log(TicTacToe.isPlayer1Turn);
+        }
+      }
+    }
+
+  },
+
+  runAITurn: function() {
+    for ( var x = 0; x < (TicTacToe.winCombinations.length) && (TicTacToe.isPlayer1Turn === false); x++ ) {
+      var $winCombinations = $(TicTacToe.winCombinations[x]);
+      var complete = $winCombinations.not(TicTacToe.xCombination).get();
+      var $box = $(".box");
+
+      if (complete.length === 1) {
+        console.log("Counter!");
+        var $aiComparison = $($box[ complete[0] - 1  ]);
+
+        if ( $aiComparison.is(':empty') ) {
+          TicTacToe.completeOTurn($aiComparison, complete[0]); 
+        } else { 
+          TicTacToe.aiSetTile();
+        }
+
+      } else if ( x === TicTacToe.winCombinations.length - 1 ) {
+        TicTacToe.aiSetTile();
+      }
+    }
+  },
+
   resetBoard: function () {
     TicTacToe.xCombination = 	[];
     TicTacToe.oCombination = 	[];
     TicTacToe.turnsPassed = 	0;
+    TicTacToe.isPlayer1Turn = true;
 
     var $boxes = $(".box");
 
@@ -37,9 +98,9 @@ var TicTacToe = {
 
       if (!complete.length) {
         if (TicTacToe.isPlayer1Turn) {
-          alert("WINNER: PLAYER ZAC");
+          alert("WINNER: PLAYER X");
         } else {
-          alert("WINNER: PLAYER NOT ZAC");
+          alert("WINNER: PLAYER O");
         }
         TicTacToe.resetBoard();
         return true; // break out of Check Win / Skip Checking Turns
@@ -47,6 +108,7 @@ var TicTacToe = {
     }
 
     TicTacToe.checkTurns();
+    console.log("Turns Passed: " + TicTacToe.turnsPassed);
   },
 
   checkTurns: function() {
@@ -60,20 +122,15 @@ var TicTacToe = {
 
   checkPlayerTurn: function( $box, index ) {
     if ($box.is(':empty')){
-      if ( TicTacToe.isPlayer1Turn ) {
-        $box.html("<p>Zac</p>");
+      if ( TicTacToe.isPlayer1Turn || TicTacToe.aiMode ) {
+        TicTacToe.completeXTurn($box, index);
 
-        TicTacToe.xCombination.push(index);
-        TicTacToe.checkWin( TicTacToe.xCombination );
+        if ( TicTacToe.aiMode ) {
+          TicTacToe.runAITurn();
+        }
 
-        TicTacToe.isPlayer1Turn = false;
       } else {
-        $box.html("<p>Not Zac</p>");
-
-        TicTacToe.oCombination.push(index);
-        TicTacToe.checkWin( TicTacToe.oCombination );
-
-        TicTacToe.isPlayer1Turn = true;
+        TicTacToe.completeOTurn($box, index);
       }
     }
   },
