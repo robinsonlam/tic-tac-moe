@@ -184,10 +184,22 @@ var RPG = {
   },
 
   monster: {
-      level:      1,
-      maxHp:      100, 
-      hp:         100,
-      exp:        20 
+    level:      1,
+    maxHp:      100, 
+    hp:         100,
+    exp:        20 
+  },
+
+  updateBars: function() {
+    var $expBar = $("#expBar");
+    var maxWidth = 380;
+    if ( RPG.player.exp === 0 ) {
+      $expBar.css("width", "1px");
+    } else {
+      var newWidth = maxWidth * ( RPG.player.exp / RPG.player.expToLevel);
+      $expBar.css("width", newWidth + "px");
+    }
+
   },
 
   checkEXP: function() {
@@ -200,6 +212,7 @@ var RPG = {
       var expNeededToLevel = RPG.player.expToLevel - RPG.player.exp;
       console.log(expNeededToLevel + "xp needed to level up.");
     }
+    RPG.updateBars();
   },
 
   awardPlayer: function() {
@@ -209,9 +222,6 @@ var RPG = {
   },
 
   attackMonster: function( result ) {
-    // Check for result of game - done
-    // Random calculator for damage
-    // If monster died, chance for items, generate new monster
     var damage = Math.ceil(Math.random() * ((RPG.monster.maxHp) - (RPG.monster.maxHp / 2) + (RPG.monster.maxHp / 2)));
 
     if ( result === "win" ) {
@@ -257,6 +267,7 @@ var RPG = {
 
   init: function() {
     console.log("Encountered Monster! \n Level: " + RPG.monster.level + "\nHP: " + RPG.monster.hp);
+    RPG.updateBars();
   }
 };
 
@@ -275,5 +286,8 @@ $(document).ready( function() {
 /*
 - Fix AI combination check
 - RPG Element
+  - EXP Bar
+  - Strength and Defense Modifiers
+  - Rework Formulas
 */
 
