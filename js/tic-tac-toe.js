@@ -1,6 +1,7 @@
 var TicTacToe = {
   isPlayer1Turn: true,
   turnsPassed: 0,
+  allowClick: true,
 
   aiMode: true,
 
@@ -45,10 +46,10 @@ var TicTacToe = {
         var $randomBox = $($box[ i - 1 ]);
 
         if ( $randomBox.is(":empty") ) {
-          console.log("Tile Set on i: " + i);
+          // console.log("Tile Set on i: " + i);
           TicTacToe.completeOTurn($randomBox, i);
           TicTacToe.isPlayer1Turn = true;
-          console.log(TicTacToe.isPlayer1Turn);
+          // console.log(TicTacToe.isPlayer1Turn);
         }
       }
     }
@@ -63,20 +64,32 @@ var TicTacToe = {
       var complete = $winCombinations.not(TicTacToe.xCombination).get();
       var $box = $(".box");
 
+      // console.log(TicTacToe.xCombination); // Problem is xCombination keeping old values..?
+
       if (complete.length === 1) {
-        console.log("Counter!");
-        var $aiComparison = $($box[ complete[0] - 1  ]);
+        // console.log("Counter!");
+        var $aiComparison = $($box[ complete[0] - 1  ]); // this line
 
         if ( $aiComparison.is(':empty') ) {
+        //   console.log("Counter tile is EMPTY\n!")
+        //   console.log("Counter is: " + $aiComparison[0] + "\n");
           TicTacToe.completeOTurn($aiComparison, complete[0]); 
         } else { 
           TicTacToe.aiSetTile();
         }
 
-      } else if ( x === TicTacToe.winCombinations.length - 1 ) {
-        TicTacToe.aiSetTile();
       }
     }
+
+    // console.log("Player Turn = " + TicTacToe.isPlayer1Turn);
+    // console.log("X = " + x);
+
+    if ( (x === TicTacToe.winCombinations.length - 1) || (TicTacToe.isPlayer1Turn === false)) {
+        // console.log("No Counter!");
+        TicTacToe.aiSetTile();
+    }
+
+    TicTacToe.allowClick = true;
   },
 
   resetBoard: function () {
@@ -101,8 +114,10 @@ var TicTacToe = {
       if (!complete.length) {
         if (TicTacToe.isPlayer1Turn) {
           alert("WINNER: PLAYER X");
+          RPG.attackMonster( "win" );
         } else {
           alert("WINNER: PLAYER O");
+          RPG.attackMonster( "loss" );
         }
         TicTacToe.resetBoard();
         return true; // break out of Check Win / Skip Checking Turns
@@ -110,7 +125,7 @@ var TicTacToe = {
     }
 
     TicTacToe.checkTurns();
-    console.log("Turns Passed: " + TicTacToe.turnsPassed);
+    // console.log("Turns Passed: " + TicTacToe.turnsPassed);
   },
 
   checkTurns: function() {
@@ -118,17 +133,19 @@ var TicTacToe = {
 
     if ( TicTacToe.turnsPassed === 9 ) {
       alert("TIE");
+      RPG.attackMonster( "draw" );
       TicTacToe.resetBoard();
     }
   },
 
   checkPlayerTurn: function( $box, index ) {
-    if ($box.is(':empty')){
+    if ($box.is(':empty') && TicTacToe.allowClick){
       if ( TicTacToe.isPlayer1Turn || TicTacToe.aiMode ) {
         TicTacToe.completeXTurn($box, index);
 
         if ( TicTacToe.aiMode ) {
-          window.setTimeout(TicTacToe.runAITurn, 500);
+          TicTacToe.allowClick = false;
+          window.setTimeout(TicTacToe.runAITurn, 800);
         }
 
       } else {
@@ -155,9 +172,109 @@ var TicTacToe = {
 };
 
 ///////////////////////////////////////
+//            RPG!
+//////////////////////////////////////
+
+var RPG = {
+  player: {
+    level:        1,
+    hp:           100,
+    exp:          0,
+    expToLevel:   100
+  },
+
+  monster: {
+      level:      1,
+      hp:         100,
+      exp:        20 
+  },
+
+  checkEXP: function() {
+    if ( RPG.player.exp >= RPG.player.expToLevel ) {
+      RPG.player.level += 1;
+      RPG.player.exp = 0;   
+      // Strength etc Up.  
+      console.log("Leveled up! You are now level: " + RPG.player.level + "!");
+    } else {
+      var expNeededToLevel = RPG.player.expToLevel - RPG.player.exp;
+      console.log(expNeededToLevel + "xp needed to level up.");
+    }
+  },
+
+  awardPlayer: function() {
+    RPG.player.exp += RPG.monster.exp;
+    RPG.checkEXP(); 
+    // ITEM DROPS!!
+  },
+
+  attackMonster: function( result ) {
+    // Check for result of game - done
+    // Random calculator for damage
+    // If monster died, chance for items, generate new monster
+    var damage = Math.ceil(Math.random() * ((RPG.monster.hp / 2) - (RPG.monster.hp / 4) + (RPG.monster.hp / 4)));
+
+    if ( result === "win" ) {
+      console.log("RIGHT IN THE FACE!");
+      damage *= 2;
+      damage = Math.floor(damage);
+      RPG.monster.hp -= damage;
+    } else if ( result === "loss" ) {
+      console.log("You barely hit it!");
+      damage /= 2;
+      RPG.monster.hp -= damage;
+    } else if ( result === "draw" ) {
+      damage *= 100;
+      RPG.monster.hp -= damage;
+    } 
+
+    console.log("Dealt " + damage + " damage to monster!");
+
+    if ( RPG.monster.hp <= 0 ) {
+      console.log("Monster Died!");
+      RPG.awardPlayer();
+      RPG.generateMonster();
+      console.log("New monster appears!");
+      console.log("Level: " + RPG.monster.level + "\n HP: " + RPG.monster.hp);
+    } else {
+      console.log("Monster HP: " + RPG.monster.hp);
+    }
+  },
+
+  generateMonster: function() {
+    
+    var generatedLevel = Math.ceil(Math.random() * ((RPG.player.level + 5) - (RPG.player.level - 1) + (RPG.player.level - 1)));
+    var generatedHp = Math.ceil(generatedLevel * 100 * (Math.random() * 2 + 1));
+    var generatedBaseExp = Math.floor( (generatedLevel * 20 * (Math.random() * 2 + 1)) * (RPG.player.level / generatedLevel) );
+
+    debugger;
+    var generatedMonster = {
+      level: generatedLevel,  
+      hp:    generatedHp,
+      exp:   generatedBaseExp  
+    };
+
+    RPG.monster = generatedMonster;
+  },
+
+  init: function() {
+    console.log("Encountered Monster! \n Level: " + RPG.monster.level + "\nHP: " + RPG.monster.hp);
+  }
+};
+
+///////////////////////////////////////
 // 		TIC TAC TOE START! 			//
 //////////////////////////////////////
 
 $(document).ready( function() { 
-  TicTacToe.init();
+  TicTacToe.init();   
+  RPG.init();
 });
+
+/////////////////
+// TODO:
+////////////////
+/*
+- Fix AI combination check
+- RPG Element
+*/
+
