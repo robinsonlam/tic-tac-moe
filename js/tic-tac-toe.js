@@ -113,10 +113,10 @@ var TicTacToe = {
 
       if (!complete.length) {
         if (TicTacToe.isPlayer1Turn) {
-          alert("WINNER: PLAYER X");
+          // alert("WINNER: PLAYER X");
           RPG.attackMonster( "win" );
         } else {
-          alert("WINNER: PLAYER O");
+          // alert("WINNER: PLAYER O");
           RPG.attackMonster( "loss" );
         }
         TicTacToe.resetBoard();
@@ -132,7 +132,7 @@ var TicTacToe = {
     TicTacToe.turnsPassed += 1;
 
     if ( TicTacToe.turnsPassed === 9 ) {
-      alert("TIE");
+      // alert("TIE");
       RPG.attackMonster( "draw" );
       TicTacToe.resetBoard();
     }
@@ -145,7 +145,7 @@ var TicTacToe = {
 
         if ( TicTacToe.aiMode ) {
           TicTacToe.allowClick = false;
-          window.setTimeout(TicTacToe.runAITurn, 800);
+          window.setTimeout(TicTacToe.runAITurn, 400);
         }
 
       } else {
@@ -185,6 +185,7 @@ var RPG = {
 
   monster: {
       level:      1,
+      maxHp:      100, 
       hp:         100,
       exp:        20 
   },
@@ -211,7 +212,7 @@ var RPG = {
     // Check for result of game - done
     // Random calculator for damage
     // If monster died, chance for items, generate new monster
-    var damage = Math.ceil(Math.random() * ((RPG.monster.hp / 2) - (RPG.monster.hp / 4) + (RPG.monster.hp / 4)));
+    var damage = Math.ceil(Math.random() * ((RPG.monster.maxHp) - (RPG.monster.maxHp / 2) + (RPG.monster.maxHp / 2)));
 
     if ( result === "win" ) {
       console.log("RIGHT IN THE FACE!");
@@ -223,7 +224,6 @@ var RPG = {
       damage /= 2;
       RPG.monster.hp -= damage;
     } else if ( result === "draw" ) {
-      damage *= 100;
       RPG.monster.hp -= damage;
     } 
 
@@ -234,22 +234,21 @@ var RPG = {
       RPG.awardPlayer();
       RPG.generateMonster();
       console.log("New monster appears!");
-      console.log("Level: " + RPG.monster.level + "\n HP: " + RPG.monster.hp);
+      console.log("Level: " + RPG.monster.level + "\nHP: " + RPG.monster.maxHp);
     } else {
       console.log("Monster HP: " + RPG.monster.hp);
     }
   },
 
-  generateMonster: function() {
-    
+  generateMonster: function() {  
     var generatedLevel = Math.ceil(Math.random() * ((RPG.player.level + 5) - (RPG.player.level - 1) + (RPG.player.level - 1)));
     var generatedHp = Math.ceil(generatedLevel * 100 * (Math.random() * 2 + 1));
     var generatedBaseExp = Math.floor( (generatedLevel * 20 * (Math.random() * 2 + 1)) * (RPG.player.level / generatedLevel) );
 
-    debugger;
     var generatedMonster = {
       level: generatedLevel,  
-      hp:    generatedHp,
+      maxHp: generatedHp,
+      hp:    generatedHp, 
       exp:   generatedBaseExp  
     };
 
