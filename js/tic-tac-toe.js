@@ -197,25 +197,25 @@ var RPG = {
     var $monsterHP = $("#monsterHPBar");
 
     var maxWidth = 380;
-    if ( RPG.player.exp === 0 ) {
-      $expBar.css("width", "1px");
-    } else {
+    if ( RPG.player.exp ) {
       var newWidth = maxWidth * ( RPG.player.exp / RPG.player.expToLevel);
       $expBar.css("width", newWidth + "px");
+    } else {
+      $expBar.css("width", "1px");
     }
 
-    if ( RPG.player.hp === 0 ) {
-      $playerHP.css("width", "1px");
-    } else {
+    if ( RPG.player.hp ) {
       var newWidth = maxWidth * ( RPG.player.hp / RPG.player.maxHp);
       $playerHP.css("width", newWidth + "px");
+    } else {     
+      $playerHP.css("width", "1px");
     }
 
-    if ( RPG.monster.hp === 0 ) {
-      $monsterHP.css("width", "1px");
-    } else {
+    if ( RPG.monster.hp ) {
       var newWidth = maxWidth * ( RPG.monster.hp / RPG.monster.maxHp);
       $monsterHP.css("width", newWidth + "px");
+    } else {
+      $monsterHP.css("width", "1px");
     }
 
   },
@@ -248,23 +248,28 @@ var RPG = {
       damage = Math.floor(damage);
       RPG.monster.hp -= damage;
     } else if ( result === "loss" ) {
-      console.log("You barely hit it!");
-      damage /= 2;
-      RPG.monster.hp -= damage;
+      console.log("Zac uses Zac Attack!");
+      var playerDamage = Math.ceil(Math.random() * ((RPG.player.maxHp) - (RPG.player.maxHp / 2) + (RPG.player.maxHp / 2)));
+
+      RPG.player.hp -= damage;
     } else if ( result === "draw" ) {
       RPG.monster.hp -= damage;
     } 
 
-    console.log("Dealt " + damage + " damage to monster!");
+    if ( playerDamage ) {
+      console.log("Zac dealt " + playerDamage + " damage to you!");
+    } else {
+      console.log("Dealt " + damage + " damage to Zac!");
+    }
 
     if ( RPG.monster.hp <= 0 ) {
-      console.log("Monster Died!");
+      console.log("Zac Died!");
       RPG.awardPlayer();
       RPG.generateMonster();
-      console.log("New monster appears!");
+      console.log("New Zac appears!");
       console.log("Level: " + RPG.monster.level + "\nHP: " + RPG.monster.maxHp);
     } else {
-      console.log("Monster HP: " + RPG.monster.hp);
+      console.log("Zac HP: " + RPG.monster.hp);
     }
     
     RPG.updateBars();
@@ -287,7 +292,7 @@ var RPG = {
   },
 
   init: function() {
-    console.log("Encountered Monster! \n Level: " + RPG.monster.level + "\nHP: " + RPG.monster.hp);
+    console.log("Encountered Zac! \n Level: " + RPG.monster.level + "\nHP: " + RPG.monster.hp);
     RPG.updateBars();
   }
 };

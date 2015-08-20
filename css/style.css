@@ -22,17 +22,26 @@ h1, h2 {
 	animation: fade-in 0.8s cubic-bezier(0.42, 0.0, 1.0, 1.0) both;
 }
 
+h1 {
+	text-transform: uppercase;
+}
+
 .container {
 	width: 960px;
 	margin: 0 auto;
 	text-align: center;
 }
 
+.half-section {
+	margin-top: 30px;
+	width: 49.5%;
+	display: inline-block;
+}
+
 #gameBoard {
 	width: 420px;
 	height: 420px;
 	margin: 0 auto;
-	margin-top: 40px;
 	background: #666; 
 	border-radius: 10px;
 	border-bottom: 2px solid #999;
