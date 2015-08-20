@@ -101,6 +101,7 @@ h1, h2 {
 	height: 20px;
 	width: 380px;
 	border-radius: 5px;
+	transition: width 1.3s ease-in-out;
 }
 
 .hpBar {

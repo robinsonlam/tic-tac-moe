@@ -178,6 +178,7 @@ var TicTacToe = {
 var RPG = {
   player: {
     level:        1,
+    maxHp:        100,
     hp:           100,
     exp:          0,
     expToLevel:   100
@@ -192,12 +193,29 @@ var RPG = {
 
   updateBars: function() {
     var $expBar = $("#expBar");
+    var $playerHP = $("#playerHPBar");
+    var $monsterHP = $("#monsterHPBar");
+
     var maxWidth = 380;
     if ( RPG.player.exp === 0 ) {
       $expBar.css("width", "1px");
     } else {
       var newWidth = maxWidth * ( RPG.player.exp / RPG.player.expToLevel);
       $expBar.css("width", newWidth + "px");
+    }
+
+    if ( RPG.player.hp === 0 ) {
+      $playerHP.css("width", "1px");
+    } else {
+      var newWidth = maxWidth * ( RPG.player.hp / RPG.player.maxHp);
+      $playerHP.css("width", newWidth + "px");
+    }
+
+    if ( RPG.monster.hp === 0 ) {
+      $monsterHP.css("width", "1px");
+    } else {
+      var newWidth = maxWidth * ( RPG.monster.hp / RPG.monster.maxHp);
+      $monsterHP.css("width", newWidth + "px");
     }
 
   },
@@ -248,6 +266,8 @@ var RPG = {
     } else {
       console.log("Monster HP: " + RPG.monster.hp);
     }
+    
+    RPG.updateBars();
   },
 
   generateMonster: function() {  
@@ -262,7 +282,8 @@ var RPG = {
       exp:   generatedBaseExp  
     };
 
-    RPG.monster = generatedMonster;
+    RPG.monster = generatedMonster;   
+    RPG.updateBars();
   },
 
   init: function() {
