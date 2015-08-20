@@ -176,6 +176,8 @@ var TicTacToe = {
 //////////////////////////////////////
 
 var RPG = {
+  consoleCounter: 0,
+
   player: {
     level:        1,
     maxHp:        100,
@@ -197,21 +199,21 @@ var RPG = {
     var $monsterHP = $("#monsterHPBar");
 
     var maxWidth = 380;
-    if ( RPG.player.exp ) {
+    if ( RPG.player.exp > 0 ) {
       var newWidth = maxWidth * ( RPG.player.exp / RPG.player.expToLevel);
       $expBar.css("width", newWidth + "px");
     } else {
       $expBar.css("width", "1px");
     }
 
-    if ( RPG.player.hp ) {
+    if ( RPG.player.hp > 0 ) {
       var newWidth = maxWidth * ( RPG.player.hp / RPG.player.maxHp);
       $playerHP.css("width", newWidth + "px");
     } else {     
       $playerHP.css("width", "1px");
     }
 
-    if ( RPG.monster.hp ) {
+    if ( RPG.monster.hp > 0 ) {
       var newWidth = maxWidth * ( RPG.monster.hp / RPG.monster.maxHp);
       $monsterHP.css("width", newWidth + "px");
     } else {
@@ -293,7 +295,8 @@ var RPG = {
 
   outputToConsole: function( message ) {
     var $outputConsole = $("#console");
-    var $consoleMessage = $("<li></li>").addClass("consoleMessage").text(message);
+    var $consoleMessage = $("<li></li>").addClass("consoleMessage").html(RPG.consoleCounter + ": " + message);
+    RPG.consoleCounter += 1;
 
     $outputConsole.prepend($consoleMessage);
   },
