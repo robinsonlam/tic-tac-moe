@@ -53,9 +53,7 @@ var TicTacToe = {
         }
       }
     }
-
     // Percentage for difficulty on ultimate move
-
   },
 
   runAITurn: function() {
@@ -113,10 +111,10 @@ var TicTacToe = {
 
       if (!complete.length) {
         if (TicTacToe.isPlayer1Turn) {
-          // alert("WINNER: PLAYER X");
+          RPG.outputToConsole("Player Won");
           RPG.attackMonster( "win" );
         } else {
-          // alert("WINNER: PLAYER O");
+          RPG.outputToConsole("Zac Won");
           RPG.attackMonster( "loss" );
         }
         TicTacToe.resetBoard();
@@ -132,7 +130,7 @@ var TicTacToe = {
     TicTacToe.turnsPassed += 1;
 
     if ( TicTacToe.turnsPassed === 9 ) {
-      // alert("TIE");
+      RPG.outputToConsole("TIE");
       RPG.attackMonster( "draw" );
       TicTacToe.resetBoard();
     }
