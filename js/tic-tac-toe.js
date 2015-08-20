@@ -46,10 +46,8 @@ var TicTacToe = {
         var $randomBox = $($box[ i - 1 ]);
 
         if ( $randomBox.is(":empty") ) {
-          // RPG.outputToConsole("Tile Set on i: " + i);
           TicTacToe.completeOTurn($randomBox, i);
           TicTacToe.isPlayer1Turn = true;
-          // RPG.outputToConsole(TicTacToe.isPlayer1Turn);
         }
       }
     }
@@ -60,17 +58,12 @@ var TicTacToe = {
     for ( var x = 0; x < (TicTacToe.winCombinations.length) && (TicTacToe.isPlayer1Turn === false); x++ ) {
       var $winCombinations = $(TicTacToe.winCombinations[x]);
       var complete = $winCombinations.not(TicTacToe.xCombination).get();
-      var $box = $(".box");
-
-      // RPG.outputToConsole(TicTacToe.xCombination); // Problem is xCombination keeping old values..?
+      var $box = $(".box"); // Problem is xCombination keeping old values..?
 
       if (complete.length === 1) {
-        // RPG.outputToConsole("Counter!");
         var $aiComparison = $($box[ complete[0] - 1  ]); // this line
 
         if ( $aiComparison.is(':empty') ) {
-        //   RPG.outputToConsole("Counter tile is EMPTY\n!")
-        //   RPG.outputToConsole("Counter is: " + $aiComparison[0] + "\n");
           TicTacToe.completeOTurn($aiComparison, complete[0]); 
         } else { 
           TicTacToe.aiSetTile();
@@ -79,11 +72,7 @@ var TicTacToe = {
       }
     }
 
-    // RPG.outputToConsole("Player Turn = " + TicTacToe.isPlayer1Turn);
-    // RPG.outputToConsole("X = " + x);
-
     if ( (x === TicTacToe.winCombinations.length - 1) || (TicTacToe.isPlayer1Turn === false)) {
-        // RPG.outputToConsole("No Counter!");
         TicTacToe.aiSetTile();
     }
 
@@ -123,7 +112,6 @@ var TicTacToe = {
     }
 
     TicTacToe.checkTurns();
-    // RPG.outputToConsole("Turns Passed: " + TicTacToe.turnsPassed);
   },
 
   checkTurns: function() {
@@ -239,6 +227,23 @@ var RPG = {
     // ITEM DROPS!!
   },
 
+  resetGame:function() {
+    RPG.player = {
+      level:        1,
+      maxHp:        100,
+      hp:           100,
+      exp:          0,
+      expToLevel:   100
+    };
+
+    RPG.monster = {
+      level:      1,
+      maxHp:      100, 
+      hp:         100,
+      exp:        20 
+    };
+  },
+
   attackMonster: function( result ) {
     var damage = Math.ceil(Math.random() * ((RPG.monster.maxHp) - (RPG.monster.maxHp / 2) + (RPG.monster.maxHp / 2)));
 
@@ -262,16 +267,25 @@ var RPG = {
       RPG.outputToConsole("Dealt " + damage + " damage to Zac!");
     }
 
-    if ( RPG.monster.hp <= 0 ) {
-      RPG.outputToConsole("Zac Died!");
-      RPG.awardPlayer();
-      RPG.generateMonster();
+    if ( RPG.player.hp <= 0 ) {
+      RPG.outputToConsole("You Died!");
+      RPG.resetGame();
+      RPG.outputToConsole("Game Reset!");
+      RPG.consoleCounter = 0;
       RPG.outputToConsole("New Zac appears!");
       RPG.outputToConsole("Level: " + RPG.monster.level + "\nHP: " + RPG.monster.maxHp);
     } else {
-      RPG.outputToConsole("Zac HP: " + RPG.monster.hp);
+        if ( RPG.monster.hp <= 0 ) {
+        RPG.outputToConsole("Zac Died!");
+        RPG.awardPlayer();
+        RPG.generateMonster();
+        RPG.outputToConsole("New Zac appears!");
+        RPG.outputToConsole("Level: " + RPG.monster.level + "\nHP: " + RPG.monster.maxHp);
+      } else {
+        RPG.outputToConsole("Zac HP: " + RPG.monster.hp);
+      }
     }
-    
+
     RPG.updateBars();
   },
 
@@ -320,7 +334,6 @@ $(document).ready( function() {
 /*
 - Fix AI combination check
 - RPG Element
-  - EXP Bar
   - Strength and Defense Modifiers
   - Rework Formulas
 */
